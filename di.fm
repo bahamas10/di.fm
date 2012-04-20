@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+#
+# Parse di.fm and listen to awesome trance
+#
+# Author: Dave Eddy <dave@daveeddy.com>
+# Date: 1/28/12
+
+# Save each link in an array
+links=( $(egrep -o 'http://listen\.di\.fm/public3/.*\.pls' < <(curl -s http://www.di.fm/) ) )
+
+# Determine what tool to use to open external programs
+if [[ $(uname) == 'Darwin' ]]; then
+	# Mac's use open(1)
+	open=open
+elif xdg-open --version &>/dev/null; then
+	# Use xdg-open(1) if it is available
+	open=xdg-open
+else
+	echo 'Unable to find program to open external files!' >&2
+	exit 1
+fi
+
+echo "${#links} stations found."
+
+# Loop and enumerate the array
+for (( i=0; i<${#links}; i++ )); do
+	link=${links[$i]}
+	# Get a clean name of the channel
+	_a=${link##*/}
+	name=${_a%.*}
+
+	echo "$i: $name"
+done
+
+# Get the user input
+read -p 'Make a selection: ' choice
+
+if [[ -n "${links[$choice]}" ]]; then
+	# Save the pls file and open it
+	t=$(mktemp /tmp/di.fm.XXXXXXXX.pls)
+	if curl "${links[$choice]}" -o "$t"; then
+		"$open" "$t"
+	fi
+else
+	echo "Invalid choice ($choice)!" >&2
+	exit 2
+fi
