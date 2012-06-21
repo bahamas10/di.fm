@@ -29,15 +29,17 @@ for (( i=0; i<${#links}; i++ )); do
 	_a=${link##*/}
 	name=${_a%.*}
 
-	echo "$i: $name"
+	printf "%3d: %-20s" "$i" "$name"
+	((i%4==3)) && echo
 done
+echo
 
 # Get the user input
 read -p 'Make a selection: ' choice
 
 if [[ -n "${links[$choice]}" ]]; then
 	# Save the pls file and open it
-	t=$(mktemp /tmp/di.fm.XXXXXXXX.pls)
+	t=$(mktemp /tmp/di.fm.XXXXXXXX).pls
 	if curl "${links[$choice]}" -o "$t"; then
 		"$open" "$t"
 	fi
