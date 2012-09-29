@@ -23,4 +23,21 @@ Usage
     Make a selection: 41
 
 
+It will attempt to open the program using either open(1) or xdg-open(1),
+this can be overwritten by setting the `OPEN` env variable.
+
+Supply a `-l` option to open the URL to the pls file, rather than downloading
+it and opening it locally.
+
+Advanced Usage
+--------------
+
+    $ OPEN=mp3blaster ./di.fm -l
+
+
+License
+-------
+
+BSD 3-clause
+
 [di.fm]: http://di.fm
